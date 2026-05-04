@@ -15,7 +15,8 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/bot.ts",
+    "deploy": "tsx src/commands/deploy-commands.ts",
     "start": "node dist/index.js",
     "build": "tsup src/index.ts --minify"
   },
