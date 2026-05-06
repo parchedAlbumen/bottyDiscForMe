@@ -1,8 +1,8 @@
-import { Guild, REST, Routes } from "discord.js";
+import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import { config } from "../config";
-import { commands } from "./index";
+import { commands } from "./commands";
 
-const commandsData = Object.values(commands).map((command) => command.data);
+const commandsData: SlashCommandBuilder[] = Object.values(commands).map((command) => command.data);
 
 const rest = new REST({ version: "10" }).setToken(config.DISCORD_TOKEN);
 
@@ -16,9 +16,7 @@ export async function deployCommands({ guildId }: DeployCommandsProps) {
 
         await rest.put(
             Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, guildId),
-            {
-                body: commandsData,
-            }
+            { body: commandsData }
         );
 
         console.log("successfully reloaded application (/) commands.");

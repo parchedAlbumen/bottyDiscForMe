@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
-import { deployCommands } from "./commands/deploy-commands";
-import { commands } from "./commands";
+import { deployCommands } from "./cmds/deploy-commands";
+import { commands } from "./cmds/commands";
 import { config } from "./config";
 
 const client = new Client({
@@ -19,6 +19,7 @@ client.on("interactionCreate", async (interaction) => {
     if (!interaction.isChatInputCommand()) {
         return;
     }
+    
     const { commandName } = interaction;
     if (commands[commandName as keyof typeof commands]) {
         await commands[commandName as keyof typeof commands].execute(interaction);
