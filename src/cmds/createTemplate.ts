@@ -7,6 +7,5 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction) {
     const workout = new Workout();
-    console.log("sending a basic template now!");
     return interaction.reply(workout.createBasicTemplate());
 }
