@@ -22,6 +22,7 @@ client.on("interactionCreate", async (interaction) => {
     
     const { commandName } = interaction;
     if (commands[commandName as keyof typeof commands]) {
+        console.log("reached here");
         await commands[commandName as keyof typeof commands].execute(interaction);
     }
 })

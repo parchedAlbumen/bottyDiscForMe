@@ -3,5 +3,5 @@ import * as createTemplate from "./createTemplate";
 
 export const commands = {
     ping,
-    createTemplate,
+    "create-template": createTemplate, //CONFUSED ABOUT THIS WATCH OUT!
 };
