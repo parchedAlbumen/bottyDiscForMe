@@ -1,6 +1,5 @@
 import { Exercise } from "./interfaces";
 
-
 export class Workout {
     private exercises: Exercise[];
 
@@ -60,7 +59,7 @@ export class Workout {
     }
 
     public createBasicTemplate(): string { //i feel like i can make this cleaner
-        let template = "```";
+        let template = "```\n";
         this.createBasicWorkout();
         this.exercises.forEach((exer) => {
             if (exer.workoutType === "upper") {
@@ -79,7 +78,7 @@ export class Workout {
     }
 
     private exerciseSummary(exer: Exercise): string {
-        return `[${exer.workoutType.toUpperCase()}] ${exer.code.toUpperCase()} - ${exer.name} (${exer.sets}x${exer.reps}) | ${exer.minWeight}-${exer.maxWeight}kg`;
+        return `[${exer.workoutType.toUpperCase()}] ${exer.code.toUpperCase().padEnd(6)} - ${exer.name.padEnd(27)} (${exer.sets}x${String(exer.reps).padEnd(2)}) | ${exer.minWeight}-${exer.maxWeight}kg`;
     }
 }
 
