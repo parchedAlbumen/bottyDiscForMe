@@ -7,6 +7,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction) {
     const workout = new Workout();
-    console.log("replying to user now!");
-    return interaction.reply(workout.createBasicTemplate());
+    console.log(interaction.user.id + " is the user ID");
+    console.log(interaction.user.displayName + " is the user name");
+    return interaction.reply(await workout.createBasicTemplate(interaction.user.id));
 }
