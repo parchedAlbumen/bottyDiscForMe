@@ -13,7 +13,6 @@ export class Workout {
         this.addLowerBodyTemplate();
         await this.pushTemplateToDatabase(user_id);
         console.log("done!");
-        // i want to push this to the database
     }
 
     private async pushTemplateToDatabase(user_id: string): Promise<void> {
@@ -22,9 +21,9 @@ export class Workout {
         }
     }
 
-    private pushExerciseToDatabase(): void {
-        //check if exercise already exist// maybe through name or code (using workout type as well)
-        //not too important for now 
+    async pushExerciseToDatabase(exer: Exercise, user_id: string): Promise<void> {
+        await insertExer(exer, user_id);
+        console.log("successfully pushed into the database");
     }
 
     private addUpperBodyTemplate(): void {
@@ -61,7 +60,7 @@ export class Workout {
         this.exercises.push(this.createExercise("lower", "Calf Raises", "cr", 4, 12, 0, 0));
     }
 
-    private createExercise(workoutType: string, name: string, code: string, sets: number, reps: number, minWeight: number, maxWeight: number): Exercise {
+    createExercise(workoutType: string, name: string, code: string, sets: number, reps: number, minWeight: number, maxWeight: number): Exercise {
         return {
             workoutType,
             name,
