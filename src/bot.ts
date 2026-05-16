@@ -3,6 +3,7 @@ import { deployCommands } from "./cmds/deploy-commands";
 import { commands } from "./cmds/commands";
 import { config } from "./config";
 import { Workout } from "./helpers/workout";
+import { lookForCode } from "./helpers/queries";
 
 const client = new Client({
     intents: ["Guilds", "GuildMessages", "DirectMessages"],
@@ -30,14 +31,18 @@ client.on("interactionCreate", async (interaction) => {
             const workoutCode: string = interaction.fields.getTextInputValue("workoutCode");
             const workoutSets: number = Number(interaction.fields.getTextInputValue("workoutSets"));
             const workoutReps: number = Number(interaction.fields.getTextInputValue("workoutReps"));
+            if (!await lookForCode(interaction.user.id, workoutCode)) {
+                interaction.reply("code/workout already exist!");
+                return 
+            }
 
             const wk = new Workout() 
-            await wk.pushExerciseToDatabase(
+            const isGood: boolean = await wk.pushExerciseToDatabase(
                 wk.createExercise(workoutType, workoutName, workoutCode, workoutSets, workoutReps, 0, 0),
                 interaction.user.id
             );
-
-            interaction.reply("successfully pushed into the database!");
+            if (isGood) interaction.reply("successfully pushed into the database!");
+            else interaction.reply("wasn't able to push it to the database properly!");
         }
     }
 })

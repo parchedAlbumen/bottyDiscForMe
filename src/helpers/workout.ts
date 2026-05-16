@@ -8,22 +8,28 @@ export class Workout {
         this.exercises = []; //empty array for now
     }
     
-    private async createBasicWorkout(user_id: string): Promise<void> {
+    private async createBasicWorkout(user_id: string): Promise<boolean> {
         this.addUpperBodyTemplate();
         this.addLowerBodyTemplate();
-        await this.pushTemplateToDatabase(user_id);
-        console.log("done!");
+        return await this.pushTemplateToDatabase(user_id);
     }
 
-    private async pushTemplateToDatabase(user_id: string): Promise<void> {
+    private async pushTemplateToDatabase(user_id: string): Promise<boolean> {
         for (const exer of this.exercises) {
-            await insertExer(exer, user_id);
+            const isGood: boolean = await insertExer(exer, user_id);
+            if (!isGood) return false;
         }
+        return true;
     }
 
-    async pushExerciseToDatabase(exer: Exercise, user_id: string): Promise<void> {
-        await insertExer(exer, user_id);
-        console.log("successfully pushed into the database");
+    async pushExerciseToDatabase(exer: Exercise, user_id: string): Promise<boolean> {
+        const isGood: boolean = await insertExer(exer, user_id);
+        if (isGood) {
+            console.log("successfully pushed into the database");
+            return true;
+        }
+        console.log("database might be off!");
+        return false;
     }
 
     private addUpperBodyTemplate(): void {
@@ -75,8 +81,12 @@ export class Workout {
     public async createBasicTemplate(user_id: string): Promise<string> { //i feel like i can make this cleaner
         const isAllowed: boolean = await lookForID(user_id);
         if (!isAllowed) return "already created a template already";
-        //else do everything else here.
-        await this.createBasicWorkout(user_id);
+
+        const result: boolean = await this.createBasicWorkout(user_id);
+        if (!result) {
+            return "failed to create template, database might be off.";
+        }
+
         let template = "```\n";
         this.exercises.forEach((exer) => {
             if (exer.workoutType === "upper") {
