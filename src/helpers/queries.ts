@@ -46,6 +46,19 @@ export async function lookForCode(user_id: string, code: string): Promise<boolea
     }
 }
 
+export async function getLowerBodyWorkouts(user_id: string): Promise<{ name: string; code: string }[]> {
+    try {
+        const result = await pool.query(
+            "SELECT workout_name, code FROM workouts WHERE user_id = $1 AND workout_type = 'lower' ORDER BY workout_name",
+            [user_id]
+        );
+        return result.rows.map((row) => ({ name: row.workout_name, code: row.code }));
+    } catch (error) {
+        console.error("BAD!", error);
+        return [];
+    }
+}
+
 export async function getUpperBodyWorkouts(user_id: string): Promise<{ name: string; code: string }[]> {
     try {
         const result = await pool.query(
