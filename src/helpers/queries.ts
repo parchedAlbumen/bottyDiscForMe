@@ -46,9 +46,44 @@ export async function lookForCode(user_id: string, code: string): Promise<boolea
     }
 }
 
-//next is deleting 
-//updating maxWeight
-//updating minWeight
-//viewing workouts and stuff::
+export async function getUpperBodyWorkouts(user_id: string): Promise<{ name: string; code: string }[]> {
+    try {
+        const result = await pool.query(
+            "SELECT workout_name, code FROM workouts WHERE user_id = $1 AND workout_type = 'upper' ORDER BY workout_name",
+            [user_id]
+        );
+        return result.rows.map((row) => ({ name: row.workout_name, code: row.code }));
+    } catch (error) {
+        console.error("BAD!", error);
+        return [];
+    }
+}
 
-//possible stuff to add later on : progress chart/tyep of bar progress thing so we can do comparisons
+export async function deleteWorkout(user_id: string, code: string): Promise<boolean> {
+    try {
+        await pool.query(
+            "DELETE FROM workouts WHERE user_id = $1 AND code = $2",
+            [user_id, code]
+        );
+        return true;
+    } catch (error) {
+        console.error("BAD!", error);
+        return false;
+    }
+}
+
+export async function updateWorkoutWeights(user_id: string, code: string, minWeight: number, maxWeight: number): Promise<boolean> {
+    try {
+        await pool.query(
+            "UPDATE workouts SET min_weight = $1, max_weight = $2 WHERE user_id = $3 AND code = $4",
+            [minWeight, maxWeight, user_id, code]
+        );
+        return true;
+    } catch (error) {
+        console.error("BAD!", error);
+        return false;
+    }
+}
+
+
+//still confused about the map() thing here so try to understand it better

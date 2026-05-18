@@ -62,6 +62,36 @@ export function createExerciseModal(): ModalBuilder {
         setsLabel,
         repsLabel
     );
-    
+
+    return modal;
+}
+
+export function updateUpperModal(code: string): ModalBuilder {
+    const modal = new ModalBuilder()
+        .setCustomId(`upper_update_modal:${code}`)
+        .setTitle("Update Exercise Weights");
+
+    const minWeightInput = new TextInputBuilder()
+        .setCustomId("minWeight")
+        .setStyle(TextInputStyle.Short)
+        .setMaxLength(5)
+        .setRequired(true);
+
+    const minWeightLabel = new LabelBuilder()
+        .setLabel("Min Weight (kg)")
+        .setTextInputComponent(minWeightInput);
+
+    const maxWeightInput = new TextInputBuilder()
+        .setCustomId("maxWeight")
+        .setStyle(TextInputStyle.Short)
+        .setMaxLength(5)
+        .setRequired(true);
+
+    const maxWeightLabel = new LabelBuilder()
+        .setLabel("Max Weight (kg)")
+        .setTextInputComponent(maxWeightInput);
+
+    modal.addLabelComponents(minWeightLabel, maxWeightLabel);
+
     return modal;
 }
