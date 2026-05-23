@@ -26,6 +26,3 @@ export async function execute(interaction: CommandInteraction) {
 
     await interaction.reply({ components: [row], ephemeral: true });
 }
-
-
-// still quite confused about the .map() thing 

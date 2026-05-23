@@ -97,6 +97,3 @@ export async function updateWorkoutWeights(user_id: string, code: string, minWei
         return false;
     }
 }
-
-
-//still confused about the map() thing here so try to understand it better
