@@ -97,3 +97,77 @@ export async function updateWorkoutWeights(user_id: string, code: string, minWei
         return false;
     }
 }
+
+export async function logProgressHistory(user_id: string, code: string, weight: number): Promise<void> {
+    try {
+        const nameResult = await pool.query(
+            "SELECT workout_name FROM workouts WHERE user_id = $1 AND code = $2",
+            [user_id, code]
+        );
+        const name: string = nameResult.rows[0]?.workout_name ?? code;
+        await pool.query(
+            "INSERT INTO progress_history (user_id, exercise_code, exercise_name, weight) VALUES ($1, $2, $3, $4)",
+            [user_id, code, name, weight]
+        );
+    } catch (error) {
+        console.error("BAD!", error);
+    }
+}
+
+export async function getRotation(user_id: string): Promise<string> {
+    try {
+        const result = await pool.query(
+            "SELECT current_day FROM workout_rotation WHERE user_id = $1",
+            [user_id]
+        );
+        if (result.rowCount === 0) return "upper_type1";
+        return result.rows[0].current_day;
+    } catch (error) {
+        console.error("BAD!", error);
+        return "upper_type1";
+    }
+}
+
+export async function advanceRotation(user_id: string): Promise<string> {
+    try {
+        const current = await getRotation(user_id);
+        const next = current === "upper_type1" ? "upper_type2" : "upper_type1";
+        await pool.query(
+            "INSERT INTO workout_rotation (user_id, current_day) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET current_day = $2",
+            [user_id, next]
+        );
+        return next;
+    } catch (error) {
+        console.error("BAD!", error);
+        return "upper_type1";
+    }
+}
+
+export async function getWeeklyProgress(user_id: string): Promise<{ code: string; name: string; first_weight: number; last_weight: number }[]> {
+    try {
+        const result = await pool.query(
+            `WITH first_log AS (
+                SELECT DISTINCT ON (exercise_code) exercise_code, exercise_name, weight
+                FROM progress_history
+                WHERE user_id = $1 AND recorded_at > NOW() - INTERVAL '7 days'
+                ORDER BY exercise_code, recorded_at ASC
+            ),
+            last_log AS (
+                SELECT DISTINCT ON (exercise_code) exercise_code, weight
+                FROM progress_history
+                WHERE user_id = $1 AND recorded_at > NOW() - INTERVAL '7 days'
+                ORDER BY exercise_code, recorded_at DESC
+            )
+            SELECT f.exercise_code AS code, f.exercise_name AS name,
+                   f.weight AS first_weight, l.weight AS last_weight
+            FROM first_log f
+            JOIN last_log l ON f.exercise_code = l.exercise_code
+            ORDER BY f.exercise_name`,
+            [user_id]
+        );
+        return result.rows;
+    } catch (error) {
+        console.error("BAD!", error);
+        return [];
+    }
+}

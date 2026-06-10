@@ -3,7 +3,7 @@ import { deployCommands } from "./cmds/deploy-commands";
 import { commands } from "./cmds/commands";
 import { config } from "./config";
 import { Workout } from "./helpers/workout";
-import { deleteWorkout, lookForCode, updateWorkoutWeights } from "./helpers/queries";
+import { deleteWorkout, lookForCode, logProgressHistory, updateWorkoutWeights } from "./helpers/queries";
 import { updateLowerModal, updateUpperModal } from "./helpers/modals";
 
 const client = new Client({
@@ -86,6 +86,7 @@ client.on("interactionCreate", async (interaction) => {
             const minWeight = Number(interaction.fields.getTextInputValue("minWeight"));
             const maxWeight = Number(interaction.fields.getTextInputValue("maxWeight"));
             const isGood = await updateWorkoutWeights(interaction.user.id, code, minWeight, maxWeight);
+            if (isGood) await logProgressHistory(interaction.user.id, code, maxWeight);
             await interaction.reply({
                 content: isGood ? `Updated \`${code}\` weights to ${minWeight}–${maxWeight}kg!` : "Failed to update — database might be off.",
                 ephemeral: true,
